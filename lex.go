@@ -21,31 +21,17 @@ import (
 // ItemType specifies type of Item.
 type ItemType int
 
+// Item types emitted by the lexer.
 const (
-	// ItemError indicates parsing error.
-	// Lex stops at first error.
-	ItemError ItemType = iota
-	// ItemSelector indicates a CSS selector.
-	ItemSelector
-	// ItemDecl indicates a CSS declaration item in a block.
-	ItemDecl
-	// ItemBlockStart indicates beginning of a regular CSS block,
-	// not inside an At-Rule.
-	ItemBlockStart
-	// ItemBlockEnd indicates ending of a regular CSS block,
-	// not inside an At-Rule.
-	ItemBlockEnd
-	// ItemAtRuleIdent indicates a CSS At-Rule identifier,
-	// including @ symbol.
-	ItemAtRuleIdent
-	// ItemAtRule indicates the content of an At-Rule,
-	// found right after the At-Rule identifier
-	// but excluding an optional block.
-	ItemAtRule
-	// ItemAtRuleBlockStart indicates beginning of an At-Rule block.
-	ItemAtRuleBlockStart
-	// ItemAtRuleBlockEnd indicates ending of an At-Rule block.
-	ItemAtRuleBlockEnd
+	ItemError            ItemType = iota // Parsing error. Lex stops at first error.
+	ItemSelector                         // CSS selector.
+	ItemDecl                             // CSS declaration in a block.
+	ItemBlockStart                       // Beginning of a regular CSS block, not inside At-Rule.
+	ItemBlockEnd                         // Ending of a regular CSS block, not inside At-Rule.
+	ItemAtRuleIdent                      // At-Rule identifier, including @ symbol.
+	ItemAtRule                           // The content of an At-Rule.
+	ItemAtRuleBlockStart                 // Beginning of an At-Rule block.
+	ItemAtRuleBlockEnd                   // Ending of an At-Rule block.
 )
 
 const eof = -1

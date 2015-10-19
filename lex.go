@@ -183,6 +183,9 @@ func lexComment(l *lexer) stateFn {
 // even if they describe the same block, i.e. separated by a comma.
 func lexSelector(l *lexer) stateFn {
 	r := l.untilRun(",{")
+	if r == eof {
+		return nil
+	}
 	defer func() {
 		l.next()
 		l.ignoreSpace()
@@ -199,13 +202,13 @@ func lexSelector(l *lexer) stateFn {
 // lexBlock parses CSS blocks found in curly braces.
 func lexBlock(l *lexer) stateFn {
 	r := l.untilRun(";}")
+	if r == eof {
+		return l.errorf("unclosed block")
+	}
 	defer func() {
 		l.next()
 		l.ignoreSpace()
 	}()
-	if r == eof {
-		return l.errorf("unclosed block")
-	}
 	if strings.ContainsRune(l.input[l.start:l.pos], ruleSep) {
 		l.emit(ItemDecl)
 	}
@@ -232,6 +235,9 @@ func lexAtRuleIdent(l *lexer) stateFn {
 // lexAtRule parses whatever follows after an At-Rule identifier.
 func lexAtRule(l *lexer) stateFn {
 	r := l.untilRun(";{")
+	if r == eof {
+		return l.errorf("missing at-rule body")
+	}
 	defer func() {
 		l.next()
 		l.ignoreSpace()

@@ -119,6 +119,32 @@ func (l *lexer) untilRun(chars string) rune {
 	return r
 }
 
+// untilRuneOutsideParentheses consumes runes until one of the chars is
+// encountered, provided that it is not within parentheses.
+func (l *lexer) untilRuneOutsideParentheses(chars string) rune {
+  chars += string(openParen) + string(closeParen)
+  nesting := 0
+  var r rune
+  for {
+    if r = l.next(); r == eof {
+      break
+    }
+    if found := strings.IndexRune(chars, r) != -1; found {
+      if r == openParen {
+        nesting++
+      } else if r == closeParen {
+        if nesting > 0 {
+          nesting--
+        }
+      } else if nesting == 0 {
+        break
+      }
+    }
+  }
+  l.backup()
+  return r
+}
+
 // errorf returns an error token and terminates the scan by passing
 // back a nil pointer that will be the next state, terminating l.nextItem.
 func (l *lexer) errorf(format string, args ...interface{}) stateFn {
@@ -134,6 +160,8 @@ const (
 	ruleSep      = ':'
 	openBlock    = '{'
 	closeBlock   = '}'
+	openParen    = '('
+	closeParen   = ')'
 	spaceChars   = " \t\n\r"
 )
 
@@ -201,7 +229,7 @@ func lexSelector(l *lexer) stateFn {
 
 // lexBlock parses CSS blocks found in curly braces.
 func lexBlock(l *lexer) stateFn {
-	r := l.untilRun(";}")
+	r := l.untilRuneOutsideParentheses(";}")
 	if r == eof {
 		return l.errorf("unclosed block")
 	}

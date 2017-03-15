@@ -34,6 +34,9 @@ div p,
   body { font-size: 10pt }
 }
 .c1{color:red}.c2{color:blue}
+body {
+  background-image: url(data:image/png;base64,iVB);
+}
 `
 
 func TestLex(t *testing.T) {
@@ -65,6 +68,10 @@ func TestLex(t *testing.T) {
 		{ItemBlockStart, 212, ""},
 		{ItemDecl, 213, "color:blue"},
 		{ItemBlockEnd, 223, ""},
+		{ItemSelector, 225, "body"},
+		{ItemBlockStart, 230, ""},
+		{ItemDecl, 234, "background-image: url(data:image/png;base64,iVB)"},
+		{ItemBlockEnd, 284, ""},
 	}
 	i := 0
 	for item := range Lex(validCSS) {
